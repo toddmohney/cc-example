@@ -8,6 +8,7 @@
 
 module People
 ( PeopleApi
+, Person (..)
 , peopleApi
 , peopleServer
 ) where
@@ -33,4 +34,4 @@ peopleServer :: ServerT PeopleApi App
 peopleServer = getPeople
 
 getPeople :: App [Person]
-getPeople = undefined
+getPeople = return [Person "Todd"]

@@ -43,7 +43,8 @@ executable meatbar-exe
   default-language:    Haskell2010
   other-modules:       App
                      , AppConfig
-                     , Documentation
+                     , Documentation.Server
+                     , Documentation.Types
                      , People
 
 test-suite front-row-screen-test

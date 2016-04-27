@@ -4,21 +4,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Documentation
+module Documentation.Types
 ( DocumentationApi
-, documentationServer
 ) where
 
-import App (App)
-import Data.Text as Text (Text)
-import Servant
-
 import qualified Data.ByteString.Lazy as LBS
-import Data.Text (Text)
-import qualified Data.Text as Text
-import Data.Text.Encoding (encodeUtf8)
-import Network.HTTP.Media ((//), (/:))
-import Servant as S
+import           Data.Text (Text)
+import           Data.Text.Encoding (encodeUtf8)
+import           Network.HTTP.Media ((//), (/:))
+import           Servant as S
+import qualified Servant.Docs as SD
 
 data Markdown
 
@@ -29,9 +24,3 @@ instance S.MimeRender Markdown Text where
     mimeRender _ text = LBS.fromStrict (encodeUtf8 text)
 
 type DocumentationApi = "docs" :> Get '[Markdown] Text
-
-documentationServer :: App Text
-documentationServer = return (Text.pack documentation)
-
-documentation :: String
-documentation = undefined

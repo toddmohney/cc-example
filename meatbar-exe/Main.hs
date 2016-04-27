@@ -8,16 +8,16 @@ import           App
 import           AppConfig (AppConfig (..), getAppConfig)
 import           Control.Monad.Reader (runReaderT)
 import           Control.Monad.Trans.Either (EitherT)
-import           People (PeopleApi)
+import qualified Documentation.Server as Docs
+import           Documentation.Types (DocumentationApi)
+import           Meatbar (MeatbarApi, meatbarServer)
 import qualified People
-import           Documentation (DocumentationApi)
-import qualified Documentation as Docs
 import           Network.Wai as Wai
 import           Network.Wai.Handler.Warp as Warp
 import           Servant
 
-type MeatbarApi = "api" :> PeopleApi
-             :<|> "api" :> DocumentationApi
+type Api = "api" :> MeatbarApi
+      :<|> "api" :> DocumentationApi
 
 main :: IO ()
 main =
@@ -29,14 +29,14 @@ app cfg =
   (getRequestLogger cfg)
   $ serve api (readerServer cfg)
 
-api :: Proxy MeatbarApi
+api :: Proxy Api
 api = Proxy
 
-server :: ServerT MeatbarApi App
-server = People.peopleServer
+server :: ServerT Api App
+server = meatbarServer
     :<|> Docs.documentationServer
 
-readerServer :: AppConfig -> Server MeatbarApi
+readerServer :: AppConfig -> Server Api
 readerServer cfg =
   enter (readerToEither cfg) server
 
