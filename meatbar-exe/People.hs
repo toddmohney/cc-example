@@ -21,7 +21,6 @@ import           Database.Persist.Sqlite as DB
 import qualified Models as M
 import           Servant
 
-
 type PeopleApi = "people" :> Get '[JSON] [Person]
 
 peopleApi :: Proxy PeopleApi
