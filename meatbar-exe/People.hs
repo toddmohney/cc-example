@@ -1,5 +1,4 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -13,17 +12,15 @@ module People
 , peopleServer
 ) where
 
-import App (App)
-import Data.Aeson
-import Data.Text (Text)
-import GHC.Generics
-import Servant
+import           Api.Types (Person (..))
+import           App (App)
+import           AppConfig
+import           Control.Monad.Logger (runStderrLoggingT)
+import           Control.Monad.Reader
+import           Database.Persist.Sqlite as DB
+import qualified Models as M
+import           Servant
 
-data Person = Person { name :: Text }
-  deriving (Show, Eq, Generic)
-
-instance ToJSON Person
-instance FromJSON Person
 
 type PeopleApi = "people" :> Get '[JSON] [Person]
 
@@ -34,4 +31,17 @@ peopleServer :: ServerT PeopleApi App
 peopleServer = getPeople
 
 getPeople :: App [Person]
-getPeople = return [Person "Todd"]
+getPeople = selectAllPeople >>= \peopleModels ->
+  return $ map toPerson peopleModels
+
+selectAllPeople :: App [Entity M.Person]
+selectAllPeople = ask >>= \cfg ->
+  let query = DB.selectList ([] :: [DB.Filter M.Person]) []
+  in liftIO $ runStderrLoggingT $ runSqlPool query (getDBPool cfg)
+
+toPerson :: Entity M.Person -> Person
+toPerson p =
+  let person   = DB.entityVal p
+      personId = DB.entityKey p
+  in Person personId (M.personName person)
+

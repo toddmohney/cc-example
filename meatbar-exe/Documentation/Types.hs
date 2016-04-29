@@ -13,7 +13,6 @@ import           Data.Text (Text)
 import           Data.Text.Encoding (encodeUtf8)
 import           Network.HTTP.Media ((//), (/:))
 import           Servant as S
-import qualified Servant.Docs as SD
 
 data Markdown
 

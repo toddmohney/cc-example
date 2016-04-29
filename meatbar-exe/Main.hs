@@ -11,18 +11,17 @@ import           Control.Monad.Trans.Either (EitherT)
 import qualified Documentation.Server as Docs
 import           Documentation.Types (DocumentationApi)
 import           Meatbar (MeatbarApi, meatbarServer)
-import qualified People
 import           Network.Wai as Wai
 import           Network.Wai.Handler.Warp as Warp
 import           Servant
+
 
 type Api = "api" :> MeatbarApi
       :<|> "api" :> DocumentationApi
 
 main :: IO ()
-main =
-  let appConfig = getAppConfig
-  in Warp.run 8081 (app appConfig)
+main = getAppConfig >>= \appConfig ->
+  Warp.run 8081 (app appConfig)
 
 app :: AppConfig -> Wai.Application
 app cfg =
