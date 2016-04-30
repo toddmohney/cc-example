@@ -14,7 +14,7 @@ spec :: Spec
 spec = do
   describe "parseData" $ do
     it "Hydrates all records from the CSV" $ do
-      Ex.parseData >>= \meatbarEaters ->
+      Ex.parseData >>= \meatbarEaters -> do
         length meatbarEaters `shouldBe` 25
 
   describe "getUniquePeople" $ do
