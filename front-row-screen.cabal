@@ -17,10 +17,14 @@ library
   hs-source-dirs:      src
   exposed-modules:     Import.Extract
                      , Models
+                     , People
   other-modules:       Paths_front_row_screen
   build-depends:       base >= 4.7 && < 5
                      , bytestring >= 0.10.6.0 && < 0.10.7.0
                      , cassava
+                     , monad-logger >= 0.3.18 && < 0.4.0
+                     , persistent >= 2.2.4.1 && < 2.2.5.0
+                     , persistent-sqlite >= 2.2.1 && < 2.3.0
                      , persistent-template
                      , text >= 1.2.2.1 && < 1.2.3.0
                      , time >= 1.5.0.1 && < 1.5.1.0
@@ -67,8 +71,8 @@ executable meatbar-exe
                      , AppConfig
                      , Documentation.Server
                      , Documentation.Types
-                     , Meatbar
-                     , People
+                     , MeatbarApi
+                     , PeopleApi
 
 test-suite front-row-screen-test
   type:                exitcode-stdio-1.0

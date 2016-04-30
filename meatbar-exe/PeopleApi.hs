@@ -5,7 +5,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
-module People
+module PeopleApi
 ( PeopleApi
 , Person (..)
 , peopleApi
@@ -15,10 +15,10 @@ module People
 import           Api.Types (Person (..))
 import           App (App)
 import           AppConfig
-import           Control.Monad.Logger (runStderrLoggingT)
 import           Control.Monad.Reader
 import           Database.Persist.Sqlite as DB
 import qualified Models as M
+import qualified People as P
 import           Servant
 
 type PeopleApi = "people" :> Get '[JSON] [Person]
@@ -30,13 +30,9 @@ peopleServer :: ServerT PeopleApi App
 peopleServer = getPeople
 
 getPeople :: App [Person]
-getPeople = selectAllPeople >>= \peopleModels ->
+getPeople = reader getDBPool >>= \dbPool ->
+  (liftIO $ P.selectAllPeople dbPool) >>= \peopleModels ->
   return $ map toPerson peopleModels
-
-selectAllPeople :: App [Entity M.Person]
-selectAllPeople = ask >>= \cfg ->
-  let query = DB.selectList ([] :: [DB.Filter M.Person]) []
-  in liftIO $ runStderrLoggingT $ runSqlPool query (getDBPool cfg)
 
 toPerson :: Entity M.Person -> Person
 toPerson p =

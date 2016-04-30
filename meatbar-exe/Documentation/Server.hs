@@ -12,7 +12,7 @@ module Documentation.Server
 import           App (App)
 import           Data.Text (Text)
 import qualified Data.Text as Text
-import           Meatbar as MB
+import           MeatbarApi as MB
 import qualified Servant.Docs as SD
 
 documentationServer :: App Text

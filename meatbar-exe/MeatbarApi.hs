@@ -2,14 +2,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Meatbar
+module MeatbarApi
 ( MeatbarApi
 , meatbarApi
 , meatbarServer
 ) where
 
 import App
-import People (PeopleApi, peopleServer)
+import PeopleApi (PeopleApi, peopleServer)
 import Servant
 
 type MeatbarApi = PeopleApi
