@@ -2,7 +2,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Import.Extract where
+module Import.Extract
+( PersonName (..)
+, MeatbarName (..)
+, parseData
+, getUniquePeople
+, getUniqueMeatbars
+) where
 
 import qualified Data.ByteString.Lazy as BL
 import           Data.Csv
