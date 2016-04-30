@@ -15,10 +15,14 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Import.Extract
+  exposed-modules:     Import.Import
+                     , Import.Extract
                      , Models
+                     , Meatbars
                      , People
+
   other-modules:       Paths_front_row_screen
+
   build-depends:       base >= 4.7 && < 5
                      , bytestring >= 0.10.6.0 && < 0.10.7.0
                      , cassava

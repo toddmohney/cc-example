@@ -5,6 +5,7 @@
 module Import.Extract
 ( PersonName (..)
 , MeatbarName (..)
+, MeatbarEater (..)
 , parseData
 , getUniquePeople
 , getUniqueMeatbars
@@ -21,26 +22,26 @@ import           Paths_front_row_screen
 
 -- extract
 
-data MeatBarEater =
-  MeatBarEater { eaterName :: Text
+data MeatbarEater =
+  MeatbarEater { eaterName :: Text
                , barType :: Text
                }
   deriving (Show, Eq, Ord)
 
-instance FromNamedRecord MeatBarEater where
+instance FromNamedRecord MeatbarEater where
   parseNamedRecord r =
-    MeatBarEater
+    MeatbarEater
       <$> r .: "person"
       <*> r .: "meat-bar-type"
 
-parseData :: IO [MeatBarEater]
+parseData :: IO [MeatbarEater]
 parseData =
   decodeCSV >>= \result ->
     case result of
       Left err -> putStrLn err >> return []
       Right (_, v) -> return $ V.toList v
 
-decodeCSV :: IO (Either String (Header, V.Vector MeatBarEater))
+decodeCSV :: IO (Either String (Header, V.Vector MeatbarEater))
 decodeCSV =
   dataFilePath >>= BL.readFile >>= return . decodeByName
 
@@ -55,35 +56,35 @@ newtype PersonName = PersonName Text
 newtype MeatbarName = MeatbarName Text
   deriving (Show, Eq, Ord)
 
-getUniquePeople :: [MeatBarEater] -> [PersonName]
+getUniquePeople :: [MeatbarEater] -> [PersonName]
 getUniquePeople eaters =
   foldl takePersonName [] (groupByName $ sortBy compareByName eaters)
 
-getUniqueMeatbars :: [MeatBarEater] -> [MeatbarName]
+getUniqueMeatbars :: [MeatbarEater] -> [MeatbarName]
 getUniqueMeatbars eaters =
   foldl takeMeatbarName [] (groupByMeatbar $ sortBy compareByMeatbar eaters)
 
-takePersonName :: [PersonName] -> [MeatBarEater] -> [PersonName]
+takePersonName :: [PersonName] -> [MeatbarEater] -> [PersonName]
 takePersonName acc a =
   case a of
     [] -> acc
     (x:_) -> (PersonName $ eaterName x):acc
 
-takeMeatbarName :: [MeatbarName] -> [MeatBarEater] -> [MeatbarName]
+takeMeatbarName :: [MeatbarName] -> [MeatbarEater] -> [MeatbarName]
 takeMeatbarName acc a =
   case a of
     [] -> acc
     (x:_) -> (MeatbarName $ barType x):acc
 
-compareByName :: MeatBarEater -> MeatBarEater -> Ordering
+compareByName :: MeatbarEater -> MeatbarEater -> Ordering
 compareByName a b = compare (eaterName a) (eaterName b)
 
-compareByMeatbar :: MeatBarEater -> MeatBarEater -> Ordering
+compareByMeatbar :: MeatbarEater -> MeatbarEater -> Ordering
 compareByMeatbar a b = compare (barType a) (barType b)
 
-groupByName :: [MeatBarEater] -> [[MeatBarEater]]
+groupByName :: [MeatbarEater] -> [[MeatbarEater]]
 groupByName = groupBy (\a b -> (eaterName a) == (eaterName b))
 
-groupByMeatbar :: [MeatBarEater] -> [[MeatBarEater]]
+groupByMeatbar :: [MeatbarEater] -> [[MeatbarEater]]
 groupByMeatbar = groupBy (\a b -> (barType a) == (barType b))
 

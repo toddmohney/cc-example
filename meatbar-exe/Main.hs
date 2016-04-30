@@ -13,14 +13,15 @@ import           Documentation.Types (DocumentationApi)
 import           MeatbarApi (MeatbarApi, meatbarServer)
 import           Network.Wai as Wai
 import           Network.Wai.Handler.Warp as Warp
+import qualified Import.Import as Im
 import           Servant
-
 
 type Api = "api" :> MeatbarApi
       :<|> "api" :> DocumentationApi
 
 main :: IO ()
-main = getAppConfig >>= \appConfig ->
+main = getAppConfig >>= \appConfig -> do
+  Im.importData (getDBPool appConfig)
   Warp.run 8081 (app appConfig)
 
 app :: AppConfig -> Wai.Application
@@ -42,3 +43,4 @@ readerServer cfg =
 readerToEither :: AppConfig -> App :~> EitherT ServantErr IO
 readerToEither cfg =
   Nat $ \x -> runReaderT x cfg
+
