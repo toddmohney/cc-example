@@ -75,6 +75,7 @@ executable meatbar-exe
   default-language:    Haskell2010
 
   other-modules:       Api.Types.Meatbars.EatenBar
+                     , Api.Types.Meatbars.EatStreak
                      , Api.Types.Meatbars.Meatbar
                      , Api.Types.People
                      , App
@@ -91,6 +92,9 @@ test-suite front-row-screen-test
   build-depends:       base
                      , front-row-screen
                      , hspec
+                     , persistent >= 2.2.4.1 && < 2.2.5.0
+                     , persistent-sqlite >= 2.2.1 && < 2.3.0
+                     , time >= 1.5.0.1 && < 1.5.1.0
 
   ghc-options:       -Wall
                      -fwarn-unused-matches
@@ -101,6 +105,7 @@ test-suite front-row-screen-test
                      -with-rtsopts=-N
 
   other-modules:       Import.ExtractSpec
+                       MeatbarsSpec
 
   default-language:    Haskell2010
 
