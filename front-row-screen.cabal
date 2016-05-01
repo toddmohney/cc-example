@@ -20,6 +20,7 @@ library
                      , Models
                      , Meatbars
                      , People
+                     , Streak
 
   other-modules:       Paths_front_row_screen
 
@@ -106,6 +107,7 @@ test-suite front-row-screen-test
 
   other-modules:       Import.ExtractSpec
                        MeatbarsSpec
+                       StreakSpec
 
   default-language:    Haskell2010
 

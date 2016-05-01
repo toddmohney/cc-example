@@ -23,7 +23,7 @@ import qualified Servant.Docs as SD
 data EatStreak =
   EatStreak { getStartDate :: UTCTime
             , getEndDate :: UTCTime
-            , getStreakDays :: Int
+            , getStreakDays :: Integer
             , getBarsEaten :: Int
             }
   deriving (Show, Eq)
@@ -58,7 +58,7 @@ toEatStreak (MB.Streak [[]])   = Nothing
 toEatStreak (MB.Streak streak) =
   let startDate = M.eatenBarDateEaten . DB.entityVal . MB.getEatenBar . head . sort . head $ streak
       endDate   = M.eatenBarDateEaten . DB.entityVal . MB.getEatenBar . last . sort . last $ streak
-      streakLength = 5 -- diffUTCTime startDate endDate
+      streakLength = diffDays (utctDay endDate) (utctDay startDate)
       barsEaten = foldl (\acc s -> acc + (length s)) 0 streak
   in
     Just $ EatStreak startDate endDate streakLength barsEaten

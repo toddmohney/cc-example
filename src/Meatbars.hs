@@ -6,8 +6,6 @@ module Meatbars
 , createMeatbar
 , createEatenBar
 , findStreaks
-, collectStreaks
-, filterStreaks
 , selectAllMeatbars
 , selectAllEatenMeatbars
 ) where
@@ -21,6 +19,8 @@ import           Database.Esqueleto ((^.))
 import           Database.Persist.Sql
 import           Database.Persist.Sqlite as DB
 import qualified Models as M
+import           Streak (Streak (..))
+import           Streak as S
 
 data EatenMeatbar =
   EatenMeatbar { getPerson :: Entity M.Person
@@ -28,9 +28,6 @@ data EatenMeatbar =
                , getEatenBar :: Entity M.EatenBar
                }
   deriving (Show, Eq)
-
-newtype Streak a = Streak [[a]]
-  deriving (Show, Eq, Ord)
 
 instance Ord EatenMeatbar where
   compare bar1 bar2 = compare (dateEaten bar1) (dateEaten bar2)
@@ -54,29 +51,11 @@ selectAllEatenMeatbars pool =
         return (eatenBar, person, meatbar)
 
 findStreaks :: [EatenMeatbar] -> [Streak EatenMeatbar]
-findStreaks = (filterStreaks 2) . collectStreaks . groupByDateEaten . sort
+findStreaks = (S.filterStreaks 2) . S.collectStreaks . groupByDateEaten . sort
 
 groupByDateEaten :: [EatenMeatbar] -> [[EatenMeatbar]]
 groupByDateEaten =
   groupBy (\bar1 bar2 -> (utctDay . dateEaten $ bar1) == (utctDay . dateEaten $ bar2))
-
-collectStreaks :: [[a]] -> [Streak a]
-collectStreaks []       = []
-collectStreaks [x]      = [Streak [x]]
-collectStreaks (x:y:zs) = collectStreaks' (x:y:zs) (Streak [x]) []
-
-collectStreaks' :: [[a]] -> Streak a -> [Streak a] -> [Streak a]
-collectStreaks' [] currStreak streaks     = streaks ++ [currStreak]
-collectStreaks' (x:[]) currStreak streaks = streaks ++ [currStreak]
-collectStreaks' (x:y:zs) currStreak streaks
-  | (length y) > (length x) = collectStreaks' (y:zs) (appendToStreak y currStreak) streaks
-  | otherwise = collectStreaks' (y:zs) (Streak [y]) (streaks ++ [currStreak])
-
-filterStreaks :: Int -> [Streak a] -> [Streak a]
-filterStreaks minStreakLength = filter (\(Streak a) -> length a >= minStreakLength)
-
-appendToStreak :: [a] -> Streak a -> Streak a
-appendToStreak a (Streak s) = (Streak (s ++ [a]))
 
 createMeatbar :: ConnectionPool -> M.Meatbar -> IO M.MeatbarId
 createMeatbar pool meatbar =
