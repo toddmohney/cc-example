@@ -22,7 +22,7 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
     name Text sqltype=text
     deriving Show
 
-  EatenBars json sql=eaten_bars
+  EatenBar json sql=eaten_bars
     personId PersonId
     meatbarId MeatbarId
     dateEaten UTCTime

@@ -94,6 +94,8 @@ test-suite front-row-screen-test
                      -rtsopts
                      -with-rtsopts=-N
 
+  other-modules:       Import.ExtractSpec
+
   default-language:    Haskell2010
 
 source-repository head

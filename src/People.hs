@@ -4,6 +4,7 @@ module People
 ) where
 
 import           Control.Monad.Logger (runStderrLoggingT)
+import           Data.Text (Text)
 import           Database.Persist.Sql
 import           Database.Persist.Sqlite as DB
 import qualified Models as M
