@@ -26,6 +26,7 @@ library
   build-depends:       base >= 4.7 && < 5
                      , bytestring >= 0.10.6.0 && < 0.10.7.0
                      , cassava
+                     , esqueleto >= 2.4.2 && < 2.5.0
                      , monad-logger >= 0.3.18 && < 0.4.0
                      , persistent >= 2.2.4.1 && < 2.2.5.0
                      , persistent-sqlite >= 2.2.1 && < 2.3.0
@@ -65,12 +66,17 @@ executable meatbar-exe
                      , servant-server
                      , resource-pool >= 0.2.3.2 && < 0.2.4.0
                      , text >= 1.2.2.1 && < 1.2.3.0
+                     , time >= 1.5.0.1 && < 1.5.1.0
                      , transformers >= 0.4.2.0 && < 0.4.3.0
                      , warp >= 3.2.2 && < 3.3.0
                      , wai >= 3.2.1 && < 3.3.0
                      , wai-extra >= 3.0.15.1 && < 3.0.16.0
+
   default-language:    Haskell2010
-  other-modules:       Api.Types
+
+  other-modules:       Api.Types.Meatbars.EatenBar
+                     , Api.Types.Meatbars.Meatbar
+                     , Api.Types.People
                      , App
                      , AppConfig
                      , Documentation.Server

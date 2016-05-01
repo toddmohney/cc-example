@@ -3,15 +3,17 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Api.Types
+module Api.Types.People
 ( Person (..)
 , samplePerson1
 , samplePerson2
+, toPerson
 ) where
 
 import           Control.Monad (mzero)
 import           Data.Aeson
 import           Database.Persist.Sql(toSqlKey, SqlBackend, ToBackendKey, Key(..))
+import qualified Database.Persist.Sql as DB
 import           Data.Text (Text)
 import qualified Models as M
 import qualified Servant.Docs as SD
@@ -36,6 +38,12 @@ instance FromJSON Person where
 
 instance SD.ToSample [Person] [Person] where
   toSample _ = Just $ [ samplePerson1, samplePerson2 ]
+
+toPerson :: DB.Entity M.Person -> Person
+toPerson p =
+  let person   = DB.entityVal p
+      personId = DB.entityKey p
+  in Person personId (M.personName person)
 
 samplePerson1 :: Person
 samplePerson1 = Person (toKey (1::Integer)) "Liz Lemon"

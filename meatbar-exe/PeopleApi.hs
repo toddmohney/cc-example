@@ -12,12 +12,10 @@ module PeopleApi
 , peopleServer
 ) where
 
-import           Api.Types (Person (..))
+import           Api.Types.People (Person (..), toPerson)
 import           App (App)
 import           AppConfig
 import           Control.Monad.Reader
-import           Database.Persist.Sqlite as DB
-import qualified Models as M
 import qualified People as P
 import           Servant
 
@@ -33,10 +31,4 @@ getPeople :: App [Person]
 getPeople = reader getDBPool >>= \dbPool ->
   (liftIO $ P.selectAllPeople dbPool) >>= \peopleModels ->
   return $ map toPerson peopleModels
-
-toPerson :: Entity M.Person -> Person
-toPerson p =
-  let person   = DB.entityVal p
-      personId = DB.entityKey p
-  in Person personId (M.personName person)
 
