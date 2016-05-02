@@ -15,7 +15,7 @@ module Meatbars
 ) where
 
 import           Control.Monad.Logger (runStderrLoggingT)
-import           Data.List (filter, groupBy, sort)
+import           Data.List (filter, groupBy, maximumBy, sort)
 import           Data.Map (Map)
 import qualified Data.Map as Map
 import           Data.Text (Text)
@@ -40,15 +40,6 @@ type DayOfMonth = Int
 
 instance Ord EatenMeatbar where
   compare bar1 bar2 = compare (dateEaten bar1) (dateEaten bar2)
-
-dateEaten :: EatenMeatbar -> UTCTime
-dateEaten = M.eatenBarDateEaten . DB.entityVal . getEatenBar
-
-monthEaten :: EatenMeatbar -> Month
-monthEaten = sndOfThree . toGregorian . utctDay . dateEaten
-
-dayEaten :: EatenMeatbar -> DayOfMonth
-dayEaten = thirdOfThree . toGregorian . utctDay . dateEaten
 
 selectAllMeatbars :: ConnectionPool -> IO [Entity M.Meatbar]
 selectAllMeatbars pool =
@@ -88,8 +79,9 @@ findMostPopularDay :: Map Month (DayOfMonth, [EatenMeatbar])
                       -> [EatenMeatbar]
                       -> Map Month (DayOfMonth, [EatenMeatbar])
 findMostPopularDay acc month barsEaten =
-  let mostActiveDay = maximum . groupByDayOfMonthEaten . sort $ barsEaten
+  let mostActiveDay = longest . groupByDayOfMonthEaten . sort $ barsEaten
       dayOfMonth    = dayEaten . head $ mostActiveDay
+      longest       = maximumBy (\a b -> compare (length a) (length b))
   in
     Map.insert month (dayOfMonth, mostActiveDay) acc
 
@@ -103,6 +95,15 @@ groupByDateEaten =
 groupByDayOfMonthEaten :: [EatenMeatbar] -> [[EatenMeatbar]]
 groupByDayOfMonthEaten =
   groupBy (\bar1 bar2 -> (dayEaten bar1) == (dayEaten bar2))
+
+dateEaten :: EatenMeatbar -> UTCTime
+dateEaten = M.eatenBarDateEaten . DB.entityVal . getEatenBar
+
+monthEaten :: EatenMeatbar -> Month
+monthEaten = sndOfThree . toGregorian . utctDay . dateEaten
+
+dayEaten :: EatenMeatbar -> DayOfMonth
+dayEaten = thirdOfThree . toGregorian . utctDay . dateEaten
 
 sndOfThree :: (a,b,c) -> b
 sndOfThree (_, b, _) = b
