@@ -28,7 +28,5 @@ peopleServer :: ServerT PeopleApi App
 peopleServer = getPeople
 
 getPeople :: App [Person]
-getPeople = reader getDBPool >>= \dbPool ->
-  (liftIO $ P.selectAllPeople dbPool) >>= \peopleModels ->
-  return $ map toPerson peopleModels
+getPeople = liftM (map toPerson) (reader getDBPool >>= liftIO . P.selectAllPeople)
 

@@ -35,16 +35,14 @@ meatbarServer = peopleServer
            :<|> getHighestDayByMonth
 
 getEatenMeatbars :: App [EatenBar]
-getEatenMeatbars = getAllEatenMeatbars >>= \eatenBarModels ->
-  return $ map toEatenBar eatenBarModels
+getEatenMeatbars = liftM (map toEatenBar) getAllEatenMeatbars
 
 getEatStreaks :: App [EatStreak]
-getEatStreaks = getAllEatenMeatbars >>= return . toEatStreaks . MB.findStreaks
+getEatStreaks = liftM  (toEatStreaks . MB.findStreaks) getAllEatenMeatbars
 
 getHighestDayByMonth :: App [MonthlyActivity]
-getHighestDayByMonth = getAllEatenMeatbars >>=
-  return . toMonthlyActivity . MB.mostPopularDayOfMonth . MB.activityByMonth
+getHighestDayByMonth =
+  liftM (toMonthlyActivity . MB.mostPopularDayOfMonth . MB.activityByMonth) getAllEatenMeatbars
 
 getAllEatenMeatbars :: App [MB.EatenMeatbar]
-getAllEatenMeatbars = reader getDBPool >>= \dbPool ->
-  (liftIO $ MB.selectAllEatenMeatbars dbPool)
+getAllEatenMeatbars = reader getDBPool >>= liftIO . MB.selectAllEatenMeatbars
