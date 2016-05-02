@@ -2,18 +2,24 @@
 
 module Meatbars
 ( EatenMeatbar (..)
+, Month
+, DayOfMonth
 , Streak (..)
+, activityByMonth
 , createMeatbar
 , createEatenBar
 , findStreaks
+, mostPopularDayOfMonth
 , selectAllMeatbars
 , selectAllEatenMeatbars
 ) where
 
 import           Control.Monad.Logger (runStderrLoggingT)
 import           Data.List (filter, groupBy, sort)
+import           Data.Map (Map)
+import qualified Data.Map as Map
 import           Data.Text (Text)
-import           Data.Time (UTCTime, utctDay)
+import           Data.Time (UTCTime, toGregorian, utctDay)
 import qualified Database.Esqueleto as E
 import           Database.Esqueleto ((^.))
 import           Database.Persist.Sql
@@ -29,11 +35,20 @@ data EatenMeatbar =
                }
   deriving (Show, Eq)
 
+type Month = Int
+type DayOfMonth = Int
+
 instance Ord EatenMeatbar where
   compare bar1 bar2 = compare (dateEaten bar1) (dateEaten bar2)
 
 dateEaten :: EatenMeatbar -> UTCTime
 dateEaten = M.eatenBarDateEaten . DB.entityVal . getEatenBar
+
+monthEaten :: EatenMeatbar -> Month
+monthEaten = sndOfThree . toGregorian . utctDay . dateEaten
+
+dayEaten :: EatenMeatbar -> DayOfMonth
+dayEaten = thirdOfThree . toGregorian . utctDay . dateEaten
 
 selectAllMeatbars :: ConnectionPool -> IO [Entity M.Meatbar]
 selectAllMeatbars pool =
@@ -50,13 +65,6 @@ selectAllEatenMeatbars pool =
         E.on $ eatenBar ^. M.EatenBarMeatbarId E.==. meatbar ^. M.MeatbarId
         return (eatenBar, person, meatbar)
 
-findStreaks :: [EatenMeatbar] -> [Streak EatenMeatbar]
-findStreaks = (S.filterStreaks 2) . S.collectStreaks . groupByDateEaten . sort
-
-groupByDateEaten :: [EatenMeatbar] -> [[EatenMeatbar]]
-groupByDateEaten =
-  groupBy (\bar1 bar2 -> (utctDay . dateEaten $ bar1) == (utctDay . dateEaten $ bar2))
-
 createMeatbar :: ConnectionPool -> M.Meatbar -> IO M.MeatbarId
 createMeatbar pool meatbar =
   runStderrLoggingT $ runSqlPool (DB.insert meatbar) pool
@@ -68,3 +76,36 @@ createEatenBar pool eatenBar =
 toEatenMeatbar :: (E.Entity M.EatenBar, E.Entity M.Person, E.Entity M.Meatbar) -> EatenMeatbar
 toEatenMeatbar (eatenBar, person, meatbar) =
   EatenMeatbar person meatbar eatenBar
+
+activityByMonth :: [EatenMeatbar] -> Map Month [EatenMeatbar]
+activityByMonth = foldl (\map bar -> Map.insertWith (++) (monthEaten bar) [bar] map) Map.empty
+
+mostPopularDayOfMonth :: Map Month [EatenMeatbar] -> Map Month (DayOfMonth, [EatenMeatbar])
+mostPopularDayOfMonth = Map.foldlWithKey findMostPopularDay Map.empty
+
+findMostPopularDay :: Map Month (DayOfMonth, [EatenMeatbar])
+                      -> Month
+                      -> [EatenMeatbar]
+                      -> Map Month (DayOfMonth, [EatenMeatbar])
+findMostPopularDay acc month barsEaten =
+  let mostActiveDay = maximum . groupByDayOfMonthEaten . sort $ barsEaten
+      dayOfMonth    = dayEaten . head $ mostActiveDay
+  in
+    Map.insert month (dayOfMonth, mostActiveDay) acc
+
+findStreaks :: [EatenMeatbar] -> [Streak EatenMeatbar]
+findStreaks = (S.filterStreaks 2) . S.collectStreaks . groupByDateEaten . sort
+
+groupByDateEaten :: [EatenMeatbar] -> [[EatenMeatbar]]
+groupByDateEaten =
+  groupBy (\bar1 bar2 -> (utctDay . dateEaten $ bar1) == (utctDay . dateEaten $ bar2))
+
+groupByDayOfMonthEaten :: [EatenMeatbar] -> [[EatenMeatbar]]
+groupByDayOfMonthEaten =
+  groupBy (\bar1 bar2 -> (dayEaten bar1) == (dayEaten bar2))
+
+sndOfThree :: (a,b,c) -> b
+sndOfThree (_, b, _) = b
+
+thirdOfThree :: (a,b,c) -> c
+thirdOfThree (_, _, c) = c

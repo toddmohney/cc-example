@@ -10,6 +10,7 @@ module MeatbarApi
 
 import           Api.Types.Meatbars.EatenBar (EatenBar, toEatenBar)
 import           Api.Types.Meatbars.EatStreak (EatStreak (..), toEatStreaks)
+import           Api.Types.Meatbars.Activity (MonthlyActivity (..), toMonthlyActivity)
 import           App
 import           AppConfig
 import           Control.Monad.Reader
@@ -22,6 +23,7 @@ type MeatbarApi = PeopleApi
 
 type MeatbarsApi = "meatbars" :> "consumption" :> Get '[JSON] [EatenBar]
               :<|> "meatbars" :> "streaks" :> Get '[JSON] [EatStreak]
+              :<|> "meatbars" :> "activity" :> Get '[JSON] [MonthlyActivity]
 
 meatbarApi :: Proxy MeatbarApi
 meatbarApi = Proxy
@@ -30,6 +32,7 @@ meatbarServer :: ServerT MeatbarApi App
 meatbarServer = peopleServer
            :<|> getEatenMeatbars
            :<|> getEatStreaks
+           :<|> getHighestDayByMonth
 
 getEatenMeatbars :: App [EatenBar]
 getEatenMeatbars = getAllEatenMeatbars >>= \eatenBarModels ->
@@ -37,6 +40,10 @@ getEatenMeatbars = getAllEatenMeatbars >>= \eatenBarModels ->
 
 getEatStreaks :: App [EatStreak]
 getEatStreaks = getAllEatenMeatbars >>= return . toEatStreaks . MB.findStreaks
+
+getHighestDayByMonth :: App [MonthlyActivity]
+getHighestDayByMonth = getAllEatenMeatbars >>=
+  return . toMonthlyActivity . MB.mostPopularDayOfMonth . MB.activityByMonth
 
 getAllEatenMeatbars :: App [MB.EatenMeatbar]
 getAllEatenMeatbars = reader getDBPool >>= \dbPool ->
