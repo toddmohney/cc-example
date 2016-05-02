@@ -16,10 +16,12 @@ import Data.Time.Clock (UTCTime)
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
   Person json sql=people
     name Text sqltype=text
+    UniquePersonName name
     deriving Show Eq
 
   Meatbar json sql=meatbars
     name Text sqltype=text
+    UniqueMeatbarName name
     deriving Show Eq
 
   EatenBar json sql=eaten_bars

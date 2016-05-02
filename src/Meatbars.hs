@@ -6,8 +6,8 @@ module Meatbars
 , DayOfMonth
 , Streak (..)
 , activityByMonth
-, createMeatbar
 , createEatenBar
+, findOrCreateMeatbar
 , findStreaks
 , mostPopularDayOfMonth
 , selectAllMeatbars
@@ -46,6 +46,11 @@ selectAllMeatbars pool =
   let query = DB.selectList ([] :: [DB.Filter M.Meatbar]) []
   in runStderrLoggingT $ runSqlPool query pool
 
+selectMeatbar :: ConnectionPool -> M.Meatbar -> IO (Maybe (Entity M.Meatbar))
+selectMeatbar pool meatbar =
+  let query = DB.selectFirst [M.MeatbarName ==. M.meatbarName meatbar] []
+  in runStderrLoggingT $ runSqlPool query pool
+
 selectAllEatenMeatbars :: ConnectionPool -> IO [EatenMeatbar]
 selectAllEatenMeatbars pool =
   (runStderrLoggingT $ runSqlPool query pool) >>= (return . (fmap toEatenMeatbar))
@@ -56,13 +61,26 @@ selectAllEatenMeatbars pool =
         E.on $ eatenBar ^. M.EatenBarMeatbarId E.==. meatbar ^. M.MeatbarId
         return (eatenBar, person, meatbar)
 
-createMeatbar :: ConnectionPool -> M.Meatbar -> IO M.MeatbarId
-createMeatbar pool meatbar =
-  runStderrLoggingT $ runSqlPool (DB.insert meatbar) pool
+selectEatenMeatbar :: ConnectionPool -> M.EatenBar -> IO (Maybe (Entity M.EatenBar))
+selectEatenMeatbar pool eatenBar =
+  let query = DB.selectFirst [ M.EatenBarPersonId ==. M.eatenBarPersonId eatenBar
+                             , M.EatenBarMeatbarId ==. M.eatenBarMeatbarId eatenBar
+                             , M.EatenBarDateEaten ==. M.eatenBarDateEaten eatenBar
+                             ]
+                             []
+  in runStderrLoggingT $ runSqlPool query pool
+
+findOrCreateMeatbar :: ConnectionPool -> M.Meatbar -> IO M.MeatbarId
+findOrCreateMeatbar pool meatbar = selectMeatbar pool meatbar >>= \existingMeatbar ->
+  case existingMeatbar of
+    Nothing  -> runStderrLoggingT $ runSqlPool (DB.insert meatbar) pool
+    (Just m) -> return . DB.entityKey $ m
 
 createEatenBar :: ConnectionPool -> M.EatenBar -> IO M.EatenBarId
-createEatenBar pool eatenBar =
-  runStderrLoggingT $ runSqlPool (DB.insert eatenBar) pool
+createEatenBar pool eatenBar = selectEatenMeatbar pool eatenBar >>= \existingBar ->
+  case existingBar of
+    Nothing  -> runStderrLoggingT $ runSqlPool (DB.insert eatenBar) pool
+    (Just b) -> return . DB.entityKey $ b
 
 toEatenMeatbar :: (E.Entity M.EatenBar, E.Entity M.Person, E.Entity M.Meatbar) -> EatenMeatbar
 toEatenMeatbar (eatenBar, person, meatbar) =

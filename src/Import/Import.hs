@@ -15,8 +15,8 @@ import qualified People as P
 importData :: ConnectionPool -> IO ()
 importData pool =
   Ex.parseData >>= \meatbarEaters -> do
-    forM_ (meatbarEatersToPeople meatbarEaters) (P.createPerson pool)
-    forM_ (meatbarEatersToMeatbars meatbarEaters) (MB.createMeatbar pool)
+    forM_ (meatbarEatersToPeople meatbarEaters) (P.findOrCreatePerson pool)
+    forM_ (meatbarEatersToMeatbars meatbarEaters) (MB.findOrCreateMeatbar pool)
 
     eatenBars <- meatbarEatersToEatenBars pool meatbarEaters
     forM_ eatenBars (MB.createEatenBar pool)

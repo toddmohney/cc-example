@@ -24,7 +24,7 @@ getAppConfig = dbPool >>= \pool ->
 dbPool :: IO ConnectionPool
 dbPool = do
   pool <- runStderrLoggingT $ do
-    p  <- createSqlitePool ":memory:" 1
+    p  <- createSqlitePool "dev.meatbar.db" 1
     runSqlPool (runMigration migrateAll) p
     return p
   return pool
