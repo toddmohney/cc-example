@@ -13,6 +13,7 @@ import           Documentation.Types (DocumentationApi)
 import           MeatbarApi (MeatbarApi, meatbarServer)
 import           Network.Wai as Wai
 import           Network.Wai.Handler.Warp as Warp
+import           Network.Wai.Middleware.Cors
 import qualified Import.Import as Im
 import           Servant
 
@@ -27,6 +28,7 @@ main = getAppConfig >>= \appConfig -> do
 app :: AppConfig -> Wai.Application
 app cfg =
   (getRequestLogger cfg)
+  $ cors (const $ Just corsPolicy)
   $ serve api (readerServer cfg)
 
 api :: Proxy Api
@@ -44,3 +46,11 @@ readerToEither :: AppConfig -> App :~> EitherT ServantErr IO
 readerToEither cfg =
   Nat $ \x -> runReaderT x cfg
 
+corsPolicy :: CorsResourcePolicy
+corsPolicy =
+  let allowedMethods = simpleMethods
+      allowedHeaders = ["Content-Type"]
+  in
+    simpleCorsResourcePolicy { corsMethods = allowedMethods
+                             , corsRequestHeaders = allowedHeaders
+                             }
