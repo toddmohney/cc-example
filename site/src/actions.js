@@ -1,11 +1,19 @@
 export const REQUEST_CONSUMERS = 'REQUEST_CONSUMERS'
 export const RECEIVE_CONSUMERS = 'RECEIVE_CONSUMERS'
+export const SELECT_CONSUMER = 'SELECT_CONSUMER'
 
 export function fetchConsumersIfNeeded() {
   return (dispatch, getState) => {
     if (!getState().hasLoadedData) {
       return dispatch(fetchConsumers())
     }
+  }
+}
+
+export const selectConsumer = (id) => {
+  return {
+    type: 'SELECT_CONSUMER',
+    id
   }
 }
 
@@ -25,10 +33,9 @@ function requestConsumers() {
 }
 
 function receiveConsumers(json) {
-  console.log("receiveConsumers: ", json);
   return {
     type: RECEIVE_CONSUMERS,
-    consumers: json,
+    consumption: json,
     receivedAt: Date.now()
   }
 }

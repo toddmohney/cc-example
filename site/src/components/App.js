@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchConsumersIfNeeded } from '../actions'
-import ListDetailView from './ListDetailView'
+import ListDetailContainer from '../containers/ListDetailContainer'
 
 class App extends Component {
   componentDidMount() {
@@ -11,7 +11,9 @@ class App extends Component {
 
   render() {
     return (
-      <ListDetailView />
+      <div>
+        <ListDetailContainer />
+      </div>
     );
   }
 }

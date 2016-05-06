@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import ConsumerList from './ConsumerList'
 import ConsumerDetail from './ConsumerDetail'
 
-const ListDetailView = () => (
+const ListDetailView = ({ listData, onListItemClick }) => (
   <div className="row">
     <div className="col-md-6">
-      <ConsumerList />
+      <ConsumerList
+        listData={listData}
+        onListItemClick={onListItemClick}
+      />
     </div>
 
     <div className="col-md-6">
@@ -13,6 +16,11 @@ const ListDetailView = () => (
     </div>
   </div>
 )
+
+ListDetailView.propTypes = {
+  listData: PropTypes.array.isRequired,
+  onListItemClick: PropTypes.func.isRequired
+}
 
 export default ListDetailView
 

@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
+import ConsumerListItem from './ConsumerListItem'
 
-const ConsumerList = () => (
+const ConsumerList = ({ listData, onListItemClick }) => (
   <div className="panel panel-default">
     <div className="panel-heading">
       <h3 className="panel-title">Number of consumptions per consumer</h3>
@@ -14,23 +15,24 @@ const ConsumerList = () => (
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Ashton</td>
-            <td>16</td>
-          </tr>
-          <tr>
-            <td>Bob</td>
-            <td>4</td>
-          </tr>
-          <tr>
-            <td>Chuck</td>
-            <td>5</td>
-          </tr>
+          { listData.map(consumer =>
+            <ConsumerListItem
+              key={consumer.id}
+              consumer={consumer}
+              onConsumerClick={onListItemClick}
+              onConsumerClick={() => onListItemClick(consumer.id)}
+            />
+          )}
         </tbody>
       </table>
     </div>
   </div>
 )
+
+ConsumerList.propTypes = {
+  listData: PropTypes.array.isRequired,
+  onListItemClick: PropTypes.func.isRequired
+}
 
 export default ConsumerList
 

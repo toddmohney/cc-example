@@ -4,11 +4,16 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
-import meatbarApp from './reducers'
+import { meatbarApp } from './reducers'
 import configureStore from './configureStore'
 import App from './components/App'
 
-let initialState = { hasLoaded: false }
+let initialState = {
+  meatbarEaters: [],
+  consumedMeatbars: [],
+  hasLoaded: false
+}
+
 let store = configureStore(initialState)
 
 render(
