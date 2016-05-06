@@ -1,0 +1,24 @@
+{
+  "name": "front-row-screen",
+  "version": "1.0.0",
+  "description": "Front Row Education take-home interview project",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "react": "0.14.x",
+    "react-redux": "4.4.x",
+    "redux": "3.5.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://toddmohney@bitbucket.org/toddmohney/meatbar.git"
+  },
+  "author": "Todd Mohney",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/toddmohney/meatbar#readme"
+}
