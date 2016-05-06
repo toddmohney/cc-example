@@ -27363,11 +27363,10 @@ var _ConsumerListItem2 = _interopRequireDefault(_ConsumerListItem);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 var ConsumerList = function ConsumerList(_ref) {
   var listData = _ref.listData;
   var onListItemClick = _ref.onListItemClick;
+  var selectedListItem = _ref.selectedListItem;
   return _react2.default.createElement(
     'div',
     { className: 'panel panel-default' },
@@ -27385,7 +27384,7 @@ var ConsumerList = function ConsumerList(_ref) {
       { className: 'panel-body' },
       _react2.default.createElement(
         'table',
-        { className: 'table' },
+        { className: 'table tableHover' },
         _react2.default.createElement(
           'thead',
           null,
@@ -27408,13 +27407,14 @@ var ConsumerList = function ConsumerList(_ref) {
           'tbody',
           null,
           listData.map(function (consumer) {
-            return _react2.default.createElement(_ConsumerListItem2.default, _defineProperty({
+            return _react2.default.createElement(_ConsumerListItem2.default, {
               key: consumer.id,
               consumer: consumer,
-              onConsumerClick: onListItemClick
-            }, 'onConsumerClick', function onConsumerClick() {
-              return onListItemClick(consumer.id);
-            }));
+              onConsumerClick: function onConsumerClick() {
+                return onListItemClick(consumer.id);
+              },
+              selected: selectedListItem.id == consumer.id
+            });
           })
         )
       )
@@ -27424,19 +27424,20 @@ var ConsumerList = function ConsumerList(_ref) {
 
 ConsumerList.propTypes = {
   listData: _react.PropTypes.array.isRequired,
+  selectedListItem: _react.PropTypes.object.isRequired,
   onListItemClick: _react.PropTypes.func.isRequired
 };
 
 exports.default = ConsumerList;
 
 },{"./ConsumerListItem":486,"react":466}],486:[function(require,module,exports){
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _react = require('react');
+var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -27445,16 +27446,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var ConsumerListItem = function ConsumerListItem(_ref) {
   var consumer = _ref.consumer;
   var onConsumerClick = _ref.onConsumerClick;
+  var selected = _ref.selected;
+
+  var classes = selected ? "active" : "";
   return _react2.default.createElement(
-    'tr',
-    { onClick: onConsumerClick },
+    "tr",
+    { onClick: onConsumerClick, className: classes },
     _react2.default.createElement(
-      'td',
+      "td",
       null,
       consumer.eater.name
     ),
     _react2.default.createElement(
-      'td',
+      "td",
       null,
       consumer.meatbarsEaten.length
     )
@@ -27462,6 +27466,7 @@ var ConsumerListItem = function ConsumerListItem(_ref) {
 };
 
 ConsumerListItem.propTypes = {
+  selected: _react.PropTypes.bool.isRequired,
   consumer: _react.PropTypes.object.isRequired,
   onConsumerClick: _react.PropTypes.func.isRequired
 };
@@ -27492,6 +27497,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var ListDetailView = function ListDetailView(_ref) {
   var listData = _ref.listData;
   var onListItemClick = _ref.onListItemClick;
+  var selectedListItem = _ref.selectedListItem;
   return _react2.default.createElement(
     'div',
     { className: 'row' },
@@ -27500,7 +27506,8 @@ var ListDetailView = function ListDetailView(_ref) {
       { className: 'col-md-6' },
       _react2.default.createElement(_ConsumerList2.default, {
         listData: listData,
-        onListItemClick: onListItemClick
+        onListItemClick: onListItemClick,
+        selectedListItem: selectedListItem
       })
     ),
     _react2.default.createElement(
@@ -27513,6 +27520,7 @@ var ListDetailView = function ListDetailView(_ref) {
 
 ListDetailView.propTypes = {
   listData: _react.PropTypes.array.isRequired,
+  selectedListItem: _react.PropTypes.object.isRequired,
   onListItemClick: _react.PropTypes.func.isRequired
 };
 
@@ -27567,7 +27575,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    listData: state.meatbarEaters
+    listData: state.meatbarEaters,
+    selectedListItem: state.selectedEater
   };
 };
 
@@ -27611,6 +27620,7 @@ var _App2 = _interopRequireDefault(_App);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var initialState = {
+  selectedEater: {},
   meatbarEaters: [],
   consumedMeatbars: [],
   hasLoaded: false
@@ -27625,13 +27635,13 @@ var store = (0, _configureStore2.default)(initialState);
 ), document.getElementById('root'));
 
 },{"./components/App":483,"./configureStore":488,"./reducers":491,"babel-polyfill":1,"react":466,"react-dom":297,"react-redux":300,"redux":474}],491:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _actions = require("../actions");
+var _actions = require('../actions');
 
 var meatbarApp = function meatbarApp(state, action) {
   switch (action.type) {
@@ -27642,8 +27652,10 @@ var meatbarApp = function meatbarApp(state, action) {
       return state;
 
     case _actions.SELECT_CONSUMER:
-      console.log("Consumer clicked: ", action);
-      return state;
+      var selectedEater = state.meatbarEaters.find(function (eater) {
+        return eater.id == action.id;
+      });
+      return Object.assign({}, state, { selectedEater: selectedEater });
 
     default:
       return state;
@@ -27656,8 +27668,10 @@ function transformPayload(state, action) {
   var meatbarEaters = Object.keys(meatbarsByEater).map(function (eaterId) {
     return buildConsumer(eaterId, meatbarsByEater);
   });
+  var selectedEater = meatbarEaters[0];
 
   return {
+    selectedEater: selectedEater,
     meatbarEaters: meatbarEaters,
     consumedMeatbars: consumedMeatbars,
     hasLoaded: true

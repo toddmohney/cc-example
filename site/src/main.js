@@ -9,6 +9,7 @@ import configureStore from './configureStore'
 import App from './components/App'
 
 let initialState = {
+  selectedEater: {},
   meatbarEaters: [],
   consumedMeatbars: [],
   hasLoaded: false

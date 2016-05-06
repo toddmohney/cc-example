@@ -9,8 +9,8 @@ const meatbarApp = (state, action) => {
       return state;
 
     case SELECT_CONSUMER:
-      console.log("Consumer clicked: ", action);
-      return state;
+      let selectedEater = state.meatbarEaters.find((eater) => eater.id == action.id);
+      return Object.assign({}, state, { selectedEater });
 
     default:
       return state
@@ -19,11 +19,13 @@ const meatbarApp = (state, action) => {
 
 function transformPayload(state, action) {
   let consumedMeatbars = action.consumption;
-  let meatbarsByEater = groupByEater(consumedMeatbars)
+  let meatbarsByEater = groupByEater(consumedMeatbars);
   let meatbarEaters = Object.keys(meatbarsByEater).
-    map((eaterId => buildConsumer(eaterId, meatbarsByEater)))
+    map((eaterId => buildConsumer(eaterId, meatbarsByEater)));
+  let selectedEater = meatbarEaters[0];
 
   return {
+    selectedEater,
     meatbarEaters,
     consumedMeatbars,
     hasLoaded: true

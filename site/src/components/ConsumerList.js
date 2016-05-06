@@ -1,13 +1,13 @@
 import React, { PropTypes } from 'react'
 import ConsumerListItem from './ConsumerListItem'
 
-const ConsumerList = ({ listData, onListItemClick }) => (
+const ConsumerList = ({ listData, onListItemClick, selectedListItem }) => (
   <div className="panel panel-default">
     <div className="panel-heading">
       <h3 className="panel-title">Number of consumptions per consumer</h3>
     </div>
     <div className="panel-body">
-      <table className="table">
+      <table className="table tableHover">
         <thead>
           <tr>
             <th>Name</th>
@@ -19,8 +19,8 @@ const ConsumerList = ({ listData, onListItemClick }) => (
             <ConsumerListItem
               key={consumer.id}
               consumer={consumer}
-              onConsumerClick={onListItemClick}
               onConsumerClick={() => onListItemClick(consumer.id)}
+              selected={selectedListItem.id == consumer.id}
             />
           )}
         </tbody>
@@ -31,6 +31,7 @@ const ConsumerList = ({ listData, onListItemClick }) => (
 
 ConsumerList.propTypes = {
   listData: PropTypes.array.isRequired,
+  selectedListItem: PropTypes.object.isRequired,
   onListItemClick: PropTypes.func.isRequired
 }
 

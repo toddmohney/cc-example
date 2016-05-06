@@ -4,7 +4,8 @@ import ListDetailView from '../components/ListDetailView'
 
 const mapStateToProps = (state) => {
   return {
-    listData: state.meatbarEaters
+    listData: state.meatbarEaters,
+    selectedListItem: state.selectedEater
   }
 }
 
