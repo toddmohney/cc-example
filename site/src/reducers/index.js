@@ -44,7 +44,6 @@ function buildConsumer(eaterId, meatbarsByEater) {
   }
 };
 
-
 function groupByEater(consumption) {
   return consumption.reduce( (acc, eatenMeatbar) => {
     let key = eatenMeatbar.eater.id;
