@@ -1,3 +1,5 @@
+import fetch from 'isomorphic-fetch';
+
 export const REQUEST_CONSUMERS = 'REQUEST_CONSUMERS';
 export const RECEIVE_CONSUMERS = 'RECEIVE_CONSUMERS';
 export const SELECT_CONSUMER = 'SELECT_CONSUMER';
