@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react'
-import ConsumerListItem from './ConsumerListItem'
+import ConsumerTableRow from './ConsumerTableRow'
 import Panel from './Panel'
 
-const ConsumerList = ({ listData, onListItemClick, selectedListItem }) => {
+const ConsumerTable = ({ listData, onListItemClick, selectedListItem }) => {
   let panelTitle = "Number of consumptions per consumer";
   let tableContent = buildTable(listData, onListItemClick, selectedListItem);
 
@@ -32,7 +32,7 @@ function buildTable(listData, onListItemClick, selectedListItem) {
 
 function buildTableData(listData, onListItemClick, selectedListItem) {
   return listData.map(consumer =>
-    <ConsumerListItem
+    <ConsumerTableRow
       key={consumer.id}
       consumer={consumer}
       onConsumerClick={() => onListItemClick(consumer.id)}
@@ -40,11 +40,11 @@ function buildTableData(listData, onListItemClick, selectedListItem) {
     />)
 }
 
-ConsumerList.propTypes = {
+ConsumerTable.propTypes = {
   listData: PropTypes.array.isRequired,
   selectedListItem: PropTypes.object,
   onListItemClick: PropTypes.func.isRequired
 }
 
-export default ConsumerList
+export default ConsumerTable
 

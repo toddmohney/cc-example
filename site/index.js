@@ -27304,11 +27304,7 @@ var App = function (_Component) {
   return App;
 }(_react.Component);
 
-function mapStateToProps(state) {
-  return {};
-}
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(App);
+exports.default = (0, _reactRedux.connect)()(App);
 
 },{"../actions":482,"../containers/ListDetailContainer":490,"react":466,"react-redux":300}],484:[function(require,module,exports){
 'use strict';
@@ -27332,51 +27328,53 @@ var ConsumerDetail = function ConsumerDetail(_ref) {
 
   var eaterName = consumer ? consumer.eater.name : "";
   var panelTitle = "Meat consumed by " + eaterName;
-  var pieChartStyles = {
-    width: "100%",
-    height: "400px"
-  };
   var panelContent = _react2.default.createElement('div', { id: 'piechart', style: pieChartStyles });
 
   if (consumer) {
     drawChart(consumer.meatbarsEaten);
   }
 
-  return _react2.default.createElement(_Panel2.default, {
-    title: panelTitle,
-    content: panelContent
-  });
+  return _react2.default.createElement(_Panel2.default, { title: panelTitle, content: panelContent });
 };
 
 function drawChart(meatbarsEaten) {
-  var consumptionData = meatbarsEaten.reduce(function (acc, eatenMeatbar) {
-    var key = eatenMeatbar.meatbar.name;
-    if (acc[key] == undefined) {
-      acc[key] = 0;
-    }
-    acc[key] += 1;
-    return acc;
-  }, {});
-
+  var consumptionData = meatbarsEatenByType(meatbarsEaten);
   var chartData = Object.keys(consumptionData).reduce(function (acc, key) {
     acc.push([key, consumptionData[key]]);
     return acc;
   }, [["Type", "Count"]]);
 
-  var data = google.visualization.arrayToDataTable(chartData);
-  var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-  var options = {
-    chartArea: {
-      top: '10%'
-    },
-    legend: {
-      alignment: 'start',
-      position: 'top',
-      maxLines: 1
-    }
-  };
-  chart.draw(data, options);
+  getPieChart().draw(google.visualization.arrayToDataTable(chartData), pieChartOptions);
 }
+
+function getPieChart() {
+  return new google.visualization.PieChart(document.getElementById('piechart'));
+}
+
+function meatbarsEatenByType(meatbarsEaten) {
+  return meatbarsEaten.reduce(function (acc, eatenMeatbar) {
+    var key = eatenMeatbar.meatbar.name;
+    acc[key] = acc[key] || 0;
+    acc[key] += 1;
+    return acc;
+  }, {});
+}
+
+var pieChartStyles = {
+  width: "100%",
+  height: "400px"
+};
+
+var pieChartOptions = {
+  chartArea: {
+    top: '10%'
+  },
+  legend: {
+    alignment: 'start',
+    position: 'top',
+    maxLines: 1
+  }
+};
 
 ConsumerDetail.propTypes = {
   consumer: _react.PropTypes.object
@@ -27395,9 +27393,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ConsumerListItem = require('./ConsumerListItem');
+var _ConsumerTableRow = require('./ConsumerTableRow');
 
-var _ConsumerListItem2 = _interopRequireDefault(_ConsumerListItem);
+var _ConsumerTableRow2 = _interopRequireDefault(_ConsumerTableRow);
 
 var _Panel = require('./Panel');
 
@@ -27405,7 +27403,7 @@ var _Panel2 = _interopRequireDefault(_Panel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var ConsumerList = function ConsumerList(_ref) {
+var ConsumerTable = function ConsumerTable(_ref) {
   var listData = _ref.listData;
   var onListItemClick = _ref.onListItemClick;
   var selectedListItem = _ref.selectedListItem;
@@ -27451,7 +27449,7 @@ function buildTable(listData, onListItemClick, selectedListItem) {
 
 function buildTableData(listData, onListItemClick, selectedListItem) {
   return listData.map(function (consumer) {
-    return _react2.default.createElement(_ConsumerListItem2.default, {
+    return _react2.default.createElement(_ConsumerTableRow2.default, {
       key: consumer.id,
       consumer: consumer,
       onConsumerClick: function onConsumerClick() {
@@ -27462,15 +27460,15 @@ function buildTableData(listData, onListItemClick, selectedListItem) {
   });
 }
 
-ConsumerList.propTypes = {
+ConsumerTable.propTypes = {
   listData: _react.PropTypes.array.isRequired,
   selectedListItem: _react.PropTypes.object,
   onListItemClick: _react.PropTypes.func.isRequired
 };
 
-exports.default = ConsumerList;
+exports.default = ConsumerTable;
 
-},{"./ConsumerListItem":486,"./Panel":488,"react":466}],486:[function(require,module,exports){
+},{"./ConsumerTableRow":486,"./Panel":488,"react":466}],486:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -27483,7 +27481,7 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var ConsumerListItem = function ConsumerListItem(_ref) {
+var ConsumerTableRow = function ConsumerTableRow(_ref) {
   var consumer = _ref.consumer;
   var onConsumerClick = _ref.onConsumerClick;
   var selected = _ref.selected;
@@ -27505,13 +27503,13 @@ var ConsumerListItem = function ConsumerListItem(_ref) {
   );
 };
 
-ConsumerListItem.propTypes = {
+ConsumerTableRow.propTypes = {
   selected: _react.PropTypes.bool.isRequired,
   consumer: _react.PropTypes.object.isRequired,
   onConsumerClick: _react.PropTypes.func.isRequired
 };
 
-exports.default = ConsumerListItem;
+exports.default = ConsumerTableRow;
 
 },{"react":466}],487:[function(require,module,exports){
 'use strict';
@@ -27524,9 +27522,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ConsumerList = require('./ConsumerList');
+var _ConsumerTable = require('./ConsumerTable');
 
-var _ConsumerList2 = _interopRequireDefault(_ConsumerList);
+var _ConsumerTable2 = _interopRequireDefault(_ConsumerTable);
 
 var _ConsumerDetail = require('./ConsumerDetail');
 
@@ -27544,7 +27542,7 @@ var ListDetailView = function ListDetailView(_ref) {
     _react2.default.createElement(
       'div',
       { className: 'col-md-6' },
-      _react2.default.createElement(_ConsumerList2.default, {
+      _react2.default.createElement(_ConsumerTable2.default, {
         listData: listData,
         onListItemClick: onListItemClick,
         selectedListItem: selectedListItem
@@ -27568,20 +27566,16 @@ ListDetailView.propTypes = {
 
 exports.default = ListDetailView;
 
-},{"./ConsumerDetail":484,"./ConsumerList":485,"react":466}],488:[function(require,module,exports){
-'use strict';
+},{"./ConsumerDetail":484,"./ConsumerTable":485,"react":466}],488:[function(require,module,exports){
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _react = require('react');
+var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
-
-var _ConsumerListItem = require('./ConsumerListItem');
-
-var _ConsumerListItem2 = _interopRequireDefault(_ConsumerListItem);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27589,20 +27583,20 @@ var Panel = function Panel(_ref) {
   var title = _ref.title;
   var content = _ref.content;
   return _react2.default.createElement(
-    'div',
-    { className: 'panel panel-default' },
+    "div",
+    { className: "panel panel-default" },
     _react2.default.createElement(
-      'div',
-      { className: 'panel-heading' },
+      "div",
+      { className: "panel-heading" },
       _react2.default.createElement(
-        'h3',
-        { className: 'panel-title' },
+        "h3",
+        { className: "panel-title" },
         title
       )
     ),
     _react2.default.createElement(
-      'div',
-      { className: 'panel-body' },
+      "div",
+      { className: "panel-body" },
       content
     )
   );
@@ -27615,7 +27609,7 @@ Panel.propTypes = {
 
 exports.default = Panel;
 
-},{"./ConsumerListItem":486,"react":466}],489:[function(require,module,exports){
+},{"react":466}],489:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27712,7 +27706,6 @@ google.charts.load('current', { 'packages': ['corechart'] });
 google.charts.setOnLoadCallback(runApp);
 
 function runApp() {
-  // TODO: fix this
   var initialState = {
     selectedEater: null,
     meatbarEaters: [],
@@ -27740,11 +27733,11 @@ var _actions = require('../actions');
 
 var meatbarApp = function meatbarApp(state, action) {
   switch (action.type) {
-    case _actions.RECEIVE_CONSUMERS:
-      return transformPayload(state, action);
-
     case _actions.REQUEST_CONSUMERS:
       return state;
+
+    case _actions.RECEIVE_CONSUMERS:
+      return transformPayload(state, action);
 
     case _actions.SELECT_CONSUMER:
       var selectedEater = state.meatbarEaters.find(function (eater) {
@@ -27758,13 +27751,22 @@ var meatbarApp = function meatbarApp(state, action) {
 };
 
 function transformPayload(state, action) {
+  // consumedMeatbars:
+  // preserve the response payload in normal form
+  // for easy updates in the future
   var consumedMeatbars = action.consumption;
+
   var meatbarsByEater = groupByEater(consumedMeatbars);
   var meatbarEaters = Object.keys(meatbarsByEater).map(function (eaterId) {
     return buildConsumer(eaterId, meatbarsByEater);
   });
+
+  // default selection
   var selectedEater = meatbarEaters[0];
 
+  // The shape of the application state
+  // should be preserved across all updates.
+  // TODO: consider ImmutableJS here: https://facebook.github.io/immutable-js/
   return {
     selectedEater: selectedEater,
     meatbarEaters: meatbarEaters,
@@ -27788,9 +27790,7 @@ function buildConsumer(eaterId, meatbarsByEater) {
 function groupByEater(consumption) {
   return consumption.reduce(function (acc, eatenMeatbar) {
     var key = eatenMeatbar.eater.id;
-    if (acc[key] == undefined) {
-      acc[key] = [];
-    }
+    acc[key] = acc[key] || [];
     acc[key].push(eatenMeatbar);
     return acc;
   }, {});

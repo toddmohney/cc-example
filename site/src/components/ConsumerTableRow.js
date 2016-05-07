@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 
-const ConsumerListItem = ({ consumer, onConsumerClick, selected }) => {
+const ConsumerTableRow = ({ consumer, onConsumerClick, selected }) => {
   let classes = selected ? "active" : "";
   return (
     <tr onClick={onConsumerClick} className={classes} >
@@ -10,12 +10,12 @@ const ConsumerListItem = ({ consumer, onConsumerClick, selected }) => {
   )
 }
 
-ConsumerListItem.propTypes = {
+ConsumerTableRow.propTypes = {
   selected: PropTypes.bool.isRequired,
   consumer: PropTypes.object.isRequired,
   onConsumerClick: PropTypes.func.isRequired
 }
 
-export default ConsumerListItem
+export default ConsumerTableRow
 
 

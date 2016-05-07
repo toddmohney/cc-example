@@ -12,7 +12,6 @@ google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(runApp);
 
 function runApp() {
-  // TODO: fix this
   let initialState = {
     selectedEater: null,
     meatbarEaters: [],

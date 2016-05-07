@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import ConsumerListItem from './ConsumerListItem'
 
 const Panel = ({ title, content }) => (
   <div className="panel panel-default">

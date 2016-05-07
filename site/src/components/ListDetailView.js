@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react'
-import ConsumerList from './ConsumerList'
+import ConsumerTable from './ConsumerTable'
 import ConsumerDetail from './ConsumerDetail'
 
 const ListDetailView = ({ listData, onListItemClick, selectedListItem }) => (
   <div className="row">
     <div className="col-md-6">
-      <ConsumerList
+      <ConsumerTable
         listData={listData}
         onListItemClick={onListItemClick}
         selectedListItem={selectedListItem}
