@@ -18,25 +18,18 @@ const meatbarApp = (state, action) => {
 };
 
 function transformPayload(state, action) {
-  // consumedMeatbars:
-  // preserve the response payload in normal form
-  // for easy updates in the future
-  const consumedMeatbars = action.consumption;
-
-  const meatbarsByEater = groupByEater(consumedMeatbars);
+  const meatbarsByEater = groupByEater(action.consumption);
   const meatbarEaters = Object.keys(meatbarsByEater).
     map((eaterId => buildConsumer(eaterId, meatbarsByEater)));
 
-  // default selection
+  // default selection, may be undefined
   const selectedEater = meatbarEaters[0];
 
   // The shape of the application state
   // should be preserved across all updates.
-  // TODO: consider ImmutableJS here: https://facebook.github.io/immutable-js/
   return {
     selectedEater,
     meatbarEaters,
-    consumedMeatbars,
     hasLoaded: true
   };
 }

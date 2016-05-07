@@ -27240,8 +27240,7 @@ function requestConsumers() {
 function receiveConsumers(json) {
   return {
     type: RECEIVE_CONSUMERS,
-    consumption: json,
-    receivedAt: Date.now()
+    consumption: json
   };
 }
 
@@ -27747,26 +27746,19 @@ var meatbarApp = function meatbarApp(state, action) {
 };
 
 function transformPayload(state, action) {
-  // consumedMeatbars:
-  // preserve the response payload in normal form
-  // for easy updates in the future
-  var consumedMeatbars = action.consumption;
-
-  var meatbarsByEater = groupByEater(consumedMeatbars);
+  var meatbarsByEater = groupByEater(action.consumption);
   var meatbarEaters = Object.keys(meatbarsByEater).map(function (eaterId) {
     return buildConsumer(eaterId, meatbarsByEater);
   });
 
-  // default selection
+  // default selection, may be undefined
   var selectedEater = meatbarEaters[0];
 
   // The shape of the application state
   // should be preserved across all updates.
-  // TODO: consider ImmutableJS here: https://facebook.github.io/immutable-js/
   return {
     selectedEater: selectedEater,
     meatbarEaters: meatbarEaters,
-    consumedMeatbars: consumedMeatbars,
     hasLoaded: true
   };
 }

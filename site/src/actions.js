@@ -35,7 +35,6 @@ function requestConsumers() {
 function receiveConsumers(json) {
   return {
     type: RECEIVE_CONSUMERS,
-    consumption: json,
-    receivedAt: Date.now()
+    consumption: json
   };
 }
