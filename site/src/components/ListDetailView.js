@@ -14,7 +14,7 @@ const ListDetailView = ({ listData, onListItemClick, selectedListItem }) => (
 
     <div className="col-md-6">
       <ConsumerDetail
-        selectedListItem={selectedListItem}
+        consumer={selectedListItem}
       />
     </div>
   </div>

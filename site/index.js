@@ -27328,18 +27328,19 @@ var _Panel2 = _interopRequireDefault(_Panel);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var ConsumerDetail = function ConsumerDetail(_ref) {
-  var selectedListItem = _ref.selectedListItem;
+  var consumer = _ref.consumer;
 
-  // var consumptionData = selectedListItem.reduce( (acc, eatenMeatbar) => {
-  // let key = eatenMeatbar.eater.id;
-  // acc[key] == acc[key] || [];
-  // acc[key].push(eatenMeatbar);
-  // return acc;
-  // }, {});
-
-  var eaterName = selectedListItem ? selectedListItem.eater.name : "";
+  var eaterName = consumer ? consumer.eater.name : "";
   var panelTitle = "Meat consumed by " + eaterName;
-  var panelContent = _react2.default.createElement('div', { id: 'piechart' });
+  var pieChartStyles = {
+    width: "100%",
+    height: "400px"
+  };
+  var panelContent = _react2.default.createElement('div', { id: 'piechart', style: pieChartStyles });
+
+  if (consumer) {
+    drawChart(consumer.meatbarsEaten);
+  }
 
   return _react2.default.createElement(_Panel2.default, {
     title: panelTitle,
@@ -27347,8 +27348,38 @@ var ConsumerDetail = function ConsumerDetail(_ref) {
   });
 };
 
+function drawChart(meatbarsEaten) {
+  var consumptionData = meatbarsEaten.reduce(function (acc, eatenMeatbar) {
+    var key = eatenMeatbar.meatbar.name;
+    if (acc[key] == undefined) {
+      acc[key] = 0;
+    }
+    acc[key] += 1;
+    return acc;
+  }, {});
+
+  var chartData = Object.keys(consumptionData).reduce(function (acc, key) {
+    acc.push([key, consumptionData[key]]);
+    return acc;
+  }, [["Type", "Count"]]);
+
+  var data = google.visualization.arrayToDataTable(chartData);
+  var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+  var options = {
+    chartArea: {
+      top: '10%'
+    },
+    legend: {
+      alignment: 'start',
+      position: 'top',
+      maxLines: 1
+    }
+  };
+  chart.draw(data, options);
+}
+
 ConsumerDetail.propTypes = {
-  selectedListItem: _react.PropTypes.object
+  consumer: _react.PropTypes.object
 };
 
 exports.default = ConsumerDetail;
@@ -27523,7 +27554,7 @@ var ListDetailView = function ListDetailView(_ref) {
       'div',
       { className: 'col-md-6' },
       _react2.default.createElement(_ConsumerDetail2.default, {
-        selectedListItem: selectedListItem
+        consumer: selectedListItem
       })
     )
   );
@@ -27677,21 +27708,26 @@ var _App2 = _interopRequireDefault(_App);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// TODO: fix this
-var initialState = {
-  selectedEater: null,
-  meatbarEaters: [],
-  consumedMeatbars: [],
-  hasLoaded: false
-};
+google.charts.load('current', { 'packages': ['corechart'] });
+google.charts.setOnLoadCallback(runApp);
 
-var store = (0, _configureStore2.default)(initialState);
+function runApp() {
+  // TODO: fix this
+  var initialState = {
+    selectedEater: null,
+    meatbarEaters: [],
+    consumedMeatbars: [],
+    hasLoaded: false
+  };
 
-(0, _reactDom.render)(_react2.default.createElement(
-  _reactRedux.Provider,
-  { store: store },
-  _react2.default.createElement(_App2.default, null)
-), document.getElementById('root'));
+  var store = (0, _configureStore2.default)(initialState);
+
+  (0, _reactDom.render)(_react2.default.createElement(
+    _reactRedux.Provider,
+    { store: store },
+    _react2.default.createElement(_App2.default, null)
+  ), document.getElementById('root'));
+}
 
 },{"./components/App":483,"./configureStore":489,"./reducers":492,"babel-polyfill":1,"react":466,"react-dom":297,"react-redux":300,"redux":474}],492:[function(require,module,exports){
 'use strict';

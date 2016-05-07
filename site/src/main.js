@@ -8,19 +8,24 @@ import { meatbarApp } from './reducers'
 import configureStore from './configureStore'
 import App from './components/App'
 
-// TODO: fix this
-let initialState = {
-  selectedEater: null,
-  meatbarEaters: [],
-  consumedMeatbars: [],
-  hasLoaded: false
+google.charts.load('current', {'packages':['corechart']});
+google.charts.setOnLoadCallback(runApp);
+
+function runApp() {
+  // TODO: fix this
+  let initialState = {
+    selectedEater: null,
+    meatbarEaters: [],
+    consumedMeatbars: [],
+    hasLoaded: false
+  }
+
+  let store = configureStore(initialState)
+
+  render(
+    <Provider store={store}>
+    <App />
+    </Provider>,
+    document.getElementById('root')
+  )
 }
-
-let store = configureStore(initialState)
-
-render(
-  <Provider store={store}>
-  <App />
-  </Provider>,
-  document.getElementById('root')
-)
