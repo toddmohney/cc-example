@@ -16,6 +16,7 @@ import           Api.Types.People (Person (..), toPerson)
 import           App (App)
 import           AppConfig
 import           Control.Monad.Reader
+import qualified Database as DB
 import qualified People as P
 import           Servant
 
@@ -28,5 +29,8 @@ peopleServer :: ServerT PeopleApi App
 peopleServer = getPeople
 
 getPeople :: App [Person]
-getPeople = liftM (map toPerson) (reader getDBPool >>= liftIO . P.selectAllPeople)
+getPeople =
+  let peopleQuery = DB.runDB P.selectAllPeople
+      dbPoolCfg = reader getDBPool
+  in liftM (map toPerson) (dbPoolCfg >>= liftIO . (runReaderT peopleQuery))
 

@@ -2,9 +2,11 @@ module Import.Import
 ( importData
 ) where
 
-import           Control.Monad (forM_)
+import           Control.Monad (forM_, liftM)
+import           Control.Monad.Reader (liftIO)
 import           Data.Maybe (fromJust)
 import           Data.Text (Text)
+import           Database
 import           Database.Persist.Sql as DB
 import           Database.Persist.Sqlite as DB
 import qualified Import.Extract as Ex
@@ -12,16 +14,14 @@ import qualified Meatbars as MB
 import qualified Models as M
 import qualified People as P
 
-importData :: ConnectionPool -> IO ()
-importData pool =
-  Ex.parseData >>= \meatbarEaters -> do
-    forM_ (meatbarEatersToPeople meatbarEaters) (P.findOrCreatePerson pool)
-    forM_ (meatbarEatersToMeatbars meatbarEaters) (MB.findOrCreateMeatbar pool)
+importData :: WithDB ()
+importData =
+  (liftIO Ex.parseData) >>= \meatbarEaters -> do
+    forM_ (meatbarEatersToPeople meatbarEaters) P.findOrCreatePerson
+    forM_ (meatbarEatersToMeatbars meatbarEaters) MB.findOrCreateMeatbar
 
-    eatenBars <- meatbarEatersToEatenBars pool meatbarEaters
-    forM_ eatenBars (MB.createEatenBar pool)
-
-    return ()
+    eatenBars <- meatbarEatersToEatenBars meatbarEaters
+    forM_ eatenBars MB.createEatenBar
 
 meatbarEatersToPeople :: [Ex.MeatbarEater] -> [M.Person]
 meatbarEatersToPeople eaters = map toPerson (Ex.getUniquePeople eaters)
@@ -33,23 +33,23 @@ meatbarEatersToMeatbars eaters = map toMeatbar (Ex.getUniqueMeatbars eaters)
   where
     toMeatbar (Ex.MeatbarName pName) = M.Meatbar pName
 
-meatbarEatersToEatenBars :: ConnectionPool -> [Ex.MeatbarEater] -> IO [M.EatenBar]
-meatbarEatersToEatenBars pool eaters = do
-  people   <- peopleLookup pool
-  meatbars <- meatbarLookup pool
+meatbarEatersToEatenBars :: [Ex.MeatbarEater] -> WithDB [M.EatenBar]
+meatbarEatersToEatenBars eaters = do
+  people   <- peopleLookup
+  meatbars <- meatbarLookup
   return $ map (buildEater people meatbars) eaters
 
-peopleLookup :: ConnectionPool -> IO [(Text, M.PersonId)]
-peopleLookup pool =
-  P.selectAllPeople pool >>= return . buildPeopleLookup
+peopleLookup :: WithDB [(Text, M.PersonId)]
+peopleLookup =
+  liftM buildPeopleLookup P.selectAllPeople
 
 buildPeopleLookup :: [DB.Entity M.Person] -> [(Text, M.PersonId)]
 buildPeopleLookup =
   map (\pEnt -> ((M.personName . DB.entityVal) pEnt, DB.entityKey pEnt))
 
-meatbarLookup :: ConnectionPool -> IO [(Text, M.MeatbarId)]
-meatbarLookup pool =
-  MB.selectAllMeatbars pool >>= return . buildMeatbarLookup
+meatbarLookup :: WithDB [(Text, M.MeatbarId)]
+meatbarLookup =
+  liftM buildMeatbarLookup MB.selectAllMeatbars
 
 buildMeatbarLookup :: [DB.Entity M.Meatbar] -> [(Text, M.MeatbarId)]
 buildMeatbarLookup =

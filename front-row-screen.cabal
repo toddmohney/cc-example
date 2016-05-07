@@ -15,7 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Import.Import
+  exposed-modules:     Database
+                     , Import.Import
                      , Import.Extract
                      , Models
                      , Meatbars
@@ -30,6 +31,7 @@ library
                      , containers >= 0.5.6.2 && < 0.5.7.0
                      , esqueleto >= 2.4.2 && < 2.5.0
                      , monad-logger >= 0.3.18 && < 0.4.0
+                     , mtl >= 2.2.1 && < 2.3.0
                      , persistent >= 2.2.4.1 && < 2.2.5.0
                      , persistent-sqlite >= 2.2.1 && < 2.3.0
                      , persistent-template

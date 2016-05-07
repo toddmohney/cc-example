@@ -20,6 +20,7 @@ import           Data.Map (Map)
 import qualified Data.Map as Map
 import           Data.Text (Text)
 import           Data.Time (UTCTime, toGregorian, utctDay)
+import           Database
 import qualified Database.Esqueleto as E
 import           Database.Esqueleto ((^.))
 import           Database.Persist.Sql
@@ -41,19 +42,15 @@ type DayOfMonth = Int
 instance Ord EatenMeatbar where
   compare bar1 bar2 = compare (dateEaten bar1) (dateEaten bar2)
 
-selectAllMeatbars :: ConnectionPool -> IO [Entity M.Meatbar]
-selectAllMeatbars pool =
-  let query = DB.selectList ([] :: [DB.Filter M.Meatbar]) []
-  in runStderrLoggingT $ runSqlPool query pool
+selectAllMeatbars :: WithDB [Entity M.Meatbar]
+selectAllMeatbars = withDBConn $ DB.selectList ([] :: [DB.Filter M.Meatbar]) []
 
-selectMeatbar :: ConnectionPool -> M.Meatbar -> IO (Maybe (Entity M.Meatbar))
-selectMeatbar pool meatbar =
-  let query = DB.selectFirst [M.MeatbarName ==. M.meatbarName meatbar] []
-  in runStderrLoggingT $ runSqlPool query pool
+selectMeatbar :: M.Meatbar -> WithDB (Maybe (Entity M.Meatbar))
+selectMeatbar meatbar = withDBConn $ DB.selectFirst [M.MeatbarName ==. M.meatbarName meatbar] []
 
-selectAllEatenMeatbars :: ConnectionPool -> IO [EatenMeatbar]
-selectAllEatenMeatbars pool =
-  (runStderrLoggingT $ runSqlPool query pool) >>= (return . (fmap toEatenMeatbar))
+selectAllEatenMeatbars :: WithDB [EatenMeatbar]
+selectAllEatenMeatbars =
+  withDBConn query >>= (return . (fmap toEatenMeatbar))
   where
     query =
       E.select $ E.from $ \(eatenBar `E.InnerJoin` person `E.InnerJoin` meatbar) -> do
@@ -61,25 +58,25 @@ selectAllEatenMeatbars pool =
         E.on $ eatenBar ^. M.EatenBarMeatbarId E.==. meatbar ^. M.MeatbarId
         return (eatenBar, person, meatbar)
 
-selectEatenMeatbar :: ConnectionPool -> M.EatenBar -> IO (Maybe (Entity M.EatenBar))
-selectEatenMeatbar pool eatenBar =
+selectEatenMeatbar :: M.EatenBar -> WithDB (Maybe (Entity M.EatenBar))
+selectEatenMeatbar eatenBar =
   let query = DB.selectFirst [ M.EatenBarPersonId ==. M.eatenBarPersonId eatenBar
                              , M.EatenBarMeatbarId ==. M.eatenBarMeatbarId eatenBar
                              , M.EatenBarDateEaten ==. M.eatenBarDateEaten eatenBar
                              ]
                              []
-  in runStderrLoggingT $ runSqlPool query pool
+  in withDBConn query
 
-findOrCreateMeatbar :: ConnectionPool -> M.Meatbar -> IO M.MeatbarId
-findOrCreateMeatbar pool meatbar = selectMeatbar pool meatbar >>= \existingMeatbar ->
+findOrCreateMeatbar :: M.Meatbar -> WithDB M.MeatbarId
+findOrCreateMeatbar meatbar = selectMeatbar meatbar >>= \existingMeatbar ->
   case existingMeatbar of
-    Nothing  -> runStderrLoggingT $ runSqlPool (DB.insert meatbar) pool
+    Nothing  -> withDBConn $ DB.insert meatbar
     (Just m) -> return . DB.entityKey $ m
 
-createEatenBar :: ConnectionPool -> M.EatenBar -> IO M.EatenBarId
-createEatenBar pool eatenBar = selectEatenMeatbar pool eatenBar >>= \existingBar ->
+createEatenBar :: M.EatenBar -> WithDB M.EatenBarId
+createEatenBar eatenBar = selectEatenMeatbar eatenBar >>= \existingBar ->
   case existingBar of
-    Nothing  -> runStderrLoggingT $ runSqlPool (DB.insert eatenBar) pool
+    Nothing  -> withDBConn $ DB.insert eatenBar
     (Just b) -> return . DB.entityKey $ b
 
 toEatenMeatbar :: (E.Entity M.EatenBar, E.Entity M.Person, E.Entity M.Meatbar) -> EatenMeatbar

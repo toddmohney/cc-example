@@ -8,6 +8,7 @@ import           App
 import           AppConfig (AppConfig (..), getAppConfig)
 import           Control.Monad.Reader (runReaderT)
 import           Control.Monad.Trans.Either (EitherT)
+import qualified Database as DB
 import qualified Documentation.Server as Docs
 import           Documentation.Types (DocumentationApi)
 import           MeatbarApi (MeatbarApi, meatbarServer)
@@ -22,7 +23,7 @@ type Api = "api" :> MeatbarApi
 
 main :: IO ()
 main = getAppConfig >>= \appConfig -> do
-  Im.importData (getDBPool appConfig)
+  runReaderT (DB.runDB Im.importData) (getDBPool appConfig)
   Warp.run 8081 (app appConfig)
 
 app :: AppConfig -> Wai.Application

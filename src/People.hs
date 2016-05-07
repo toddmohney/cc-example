@@ -4,23 +4,21 @@ module People
 ) where
 
 import           Control.Monad.Logger (runStderrLoggingT)
+import           Control.Monad.Reader
 import           Data.Text (Text)
+import           Database
 import           Database.Persist.Sql
 import           Database.Persist.Sqlite as DB
 import qualified Models as M
 
-selectAllPeople :: ConnectionPool -> IO [Entity M.Person]
-selectAllPeople pool =
-  let query = DB.selectList ([] :: [DB.Filter M.Person]) []
-  in runStderrLoggingT $ runSqlPool query pool
+selectAllPeople :: WithDB [Entity M.Person]
+selectAllPeople = withDBConn $ DB.selectList ([] :: [DB.Filter M.Person]) []
 
-selectPerson :: ConnectionPool -> M.Person -> IO (Maybe (Entity M.Person))
-selectPerson pool p =
-  let query = DB.selectFirst [M.PersonName ==. M.personName p] []
-  in runStderrLoggingT $ runSqlPool query pool
+selectPerson :: M.Person -> WithDB (Maybe (Entity M.Person))
+selectPerson p = withDBConn $ DB.selectFirst [M.PersonName ==. M.personName p] []
 
-findOrCreatePerson :: ConnectionPool -> M.Person -> IO M.PersonId
-findOrCreatePerson pool person = selectPerson pool person >>= \existingPerson ->
+findOrCreatePerson :: M.Person -> WithDB M.PersonId
+findOrCreatePerson person = selectPerson person >>= \existingPerson ->
   case existingPerson of
-    Nothing  -> runStderrLoggingT $ runSqlPool (DB.insert person) pool
+    Nothing  -> withDBConn $ DB.insert person
     (Just p) -> return . DB.entityKey $ p

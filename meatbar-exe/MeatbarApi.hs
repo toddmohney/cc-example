@@ -14,6 +14,7 @@ import           Api.Types.Meatbars.Activity (MonthlyActivity (..), toMonthlyAct
 import           App
 import           AppConfig
 import           Control.Monad.Reader
+import qualified Database as DB
 import qualified Meatbars as MB
 import           PeopleApi (PeopleApi, peopleServer)
 import           Servant
@@ -45,4 +46,6 @@ getHighestDayByMonth =
   liftM (toMonthlyActivity . MB.mostPopularDayOfMonth . MB.activityByMonth) getAllEatenMeatbars
 
 getAllEatenMeatbars :: App [MB.EatenMeatbar]
-getAllEatenMeatbars = reader getDBPool >>= liftIO . MB.selectAllEatenMeatbars
+getAllEatenMeatbars =
+  let meatbarQuery = DB.runDB MB.selectAllEatenMeatbars
+  in (reader getDBPool) >>= liftIO . (runReaderT meatbarQuery)
