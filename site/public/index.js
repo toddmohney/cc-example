@@ -27223,7 +27223,7 @@ var selectConsumer = exports.selectConsumer = function selectConsumer(id) {
 function fetchConsumers() {
   return function (dispatch) {
     dispatch(requestConsumers());
-    return fetch("http://localhost:8081/api/meatbars/consumption").then(function (response) {
+    return fetch('http://localhost:8081/api/meatbars/consumption').then(function (response) {
       return response.json();
     }).then(function (json) {
       return dispatch(receiveConsumers(json));
@@ -27326,8 +27326,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var ConsumerDetail = function ConsumerDetail(_ref) {
   var consumer = _ref.consumer;
 
-  var eaterName = consumer ? consumer.eater.name : "";
-  var panelTitle = "Meat consumed by " + eaterName;
+  var eaterName = consumer ? consumer.eater.name : '';
+  var panelTitle = 'Meat consumed by ' + eaterName;
   var panelContent = _react2.default.createElement('div', { id: 'piechart', style: pieChartStyles });
 
   if (consumer) {
@@ -27342,7 +27342,7 @@ function drawChart(meatbarsEaten) {
   var chartData = Object.keys(consumptionData).reduce(function (acc, key) {
     acc.push([key, consumptionData[key]]);
     return acc;
-  }, [["Type", "Count"]]);
+  }, [['Type', 'Count']]);
 
   getPieChart().draw(google.visualization.arrayToDataTable(chartData), pieChartOptions);
 }
@@ -27361,8 +27361,8 @@ function meatbarsEatenByType(meatbarsEaten) {
 }
 
 var pieChartStyles = {
-  width: "100%",
-  height: "400px"
+  width: '100%',
+  height: '400px'
 };
 
 var pieChartOptions = {
@@ -27408,7 +27408,7 @@ var ConsumerTable = function ConsumerTable(_ref) {
   var onListItemClick = _ref.onListItemClick;
   var selectedListItem = _ref.selectedListItem;
 
-  var panelTitle = "Number of consumptions per consumer";
+  var panelTitle = 'Number of consumptions per consumer';
   var tableContent = buildTable(listData, onListItemClick, selectedListItem);
 
   return _react2.default.createElement(_Panel2.default, {
@@ -27469,13 +27469,13 @@ ConsumerTable.propTypes = {
 exports.default = ConsumerTable;
 
 },{"./ConsumerTableRow":486,"./Panel":488,"react":466}],486:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -27486,17 +27486,17 @@ var ConsumerTableRow = function ConsumerTableRow(_ref) {
   var onConsumerClick = _ref.onConsumerClick;
   var selected = _ref.selected;
 
-  var classes = selected ? "active" : "";
+  var classes = selected ? 'active' : '';
   return _react2.default.createElement(
-    "tr",
+    'tr',
     { onClick: onConsumerClick, className: classes },
     _react2.default.createElement(
-      "td",
+      'td',
       null,
       consumer.eater.name
     ),
     _react2.default.createElement(
-      "td",
+      'td',
       null,
       consumer.meatbarsEaten.length
     )
@@ -27688,10 +27688,6 @@ var _reactDom = require('react-dom');
 
 var _reactRedux = require('react-redux');
 
-var _redux = require('redux');
-
-var _reducers = require('./reducers');
-
 var _configureStore = require('./configureStore');
 
 var _configureStore2 = _interopRequireDefault(_configureStore);
@@ -27722,7 +27718,7 @@ function runApp() {
   ), document.getElementById('root'));
 }
 
-},{"./components/App":483,"./configureStore":489,"./reducers":492,"babel-polyfill":1,"react":466,"react-dom":297,"react-redux":300,"redux":474}],492:[function(require,module,exports){
+},{"./components/App":483,"./configureStore":489,"babel-polyfill":1,"react":466,"react-dom":297,"react-redux":300}],492:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -27785,7 +27781,7 @@ function buildConsumer(eaterId, meatbarsByEater) {
     eater: eater,
     meatbarsEaten: meatbarsEaten
   };
-};
+}
 
 function groupByEater(consumption) {
   return consumption.reduce(function (acc, eatenMeatbar) {

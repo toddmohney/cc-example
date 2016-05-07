@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React, { PropTypes } from 'react';
 
 const Panel = ({ title, content }) => (
   <div className="panel panel-default">
@@ -11,13 +11,11 @@ const Panel = ({ title, content }) => (
       {content}
     </div>
   </div>
-)
+);
 
 Panel.propTypes = {
   title: PropTypes.string.isRequired,
   content: PropTypes.object.isRequired
-}
+};
 
-export default Panel
-
-
+export default Panel;

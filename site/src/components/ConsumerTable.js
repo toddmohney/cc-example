@@ -1,18 +1,18 @@
-import React, { PropTypes } from 'react'
-import ConsumerTableRow from './ConsumerTableRow'
-import Panel from './Panel'
+import React, { PropTypes } from 'react';
+import ConsumerTableRow from './ConsumerTableRow';
+import Panel from './Panel';
 
 const ConsumerTable = ({ listData, onListItemClick, selectedListItem }) => {
-  let panelTitle = "Number of consumptions per consumer";
-  let tableContent = buildTable(listData, onListItemClick, selectedListItem);
+  const panelTitle = 'Number of consumptions per consumer';
+  const tableContent = buildTable(listData, onListItemClick, selectedListItem);
 
   return (
     <Panel
       title={panelTitle}
       content={tableContent}
     />
-  )
-}
+  );
+};
 
 function buildTable(listData, onListItemClick, selectedListItem) {
   return (
@@ -37,14 +37,13 @@ function buildTableData(listData, onListItemClick, selectedListItem) {
       consumer={consumer}
       onConsumerClick={() => onListItemClick(consumer.id)}
       selected={selectedListItem && selectedListItem.id == consumer.id}
-    />)
+    />);
 }
 
 ConsumerTable.propTypes = {
   listData: PropTypes.array.isRequired,
   selectedListItem: PropTypes.object,
   onListItemClick: PropTypes.func.isRequired
-}
+};
 
-export default ConsumerTable
-
+export default ConsumerTable;

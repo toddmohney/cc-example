@@ -1,6 +1,6 @@
-import React, { PropTypes } from 'react'
-import ConsumerTable from './ConsumerTable'
-import ConsumerDetail from './ConsumerDetail'
+import React, { PropTypes } from 'react';
+import ConsumerTable from './ConsumerTable';
+import ConsumerDetail from './ConsumerDetail';
 
 const ListDetailView = ({ listData, onListItemClick, selectedListItem }) => (
   <div className="row">
@@ -18,13 +18,12 @@ const ListDetailView = ({ listData, onListItemClick, selectedListItem }) => (
       />
     </div>
   </div>
-)
+);
 
 ListDetailView.propTypes = {
   listData: PropTypes.array.isRequired,
   selectedListItem: PropTypes.object,
   onListItemClick: PropTypes.func.isRequired
-}
+};
 
-export default ListDetailView
-
+export default ListDetailView;

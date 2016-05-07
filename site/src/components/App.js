@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { fetchConsumersIfNeeded } from '../actions'
-import ListDetailContainer from '../containers/ListDetailContainer'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { fetchConsumersIfNeeded } from '../actions';
+import ListDetailContainer from '../containers/ListDetailContainer';
 
 class App extends Component {
   componentDidMount() {
-    const { dispatch } = this.props
-    dispatch(fetchConsumersIfNeeded())
+    const { dispatch } = this.props;
+    dispatch(fetchConsumersIfNeeded());
   }
 
   render() {
@@ -18,4 +18,4 @@ class App extends Component {
   }
 }
 
-export default connect()(App)
+export default connect()(App);

@@ -40,3 +40,9 @@ npm install
 # compile application js
 browserify -t [ babelify --presets [ es2015 react ] ] src/main.js -o public/index.js
 ```
+
+## Running the linter
+```bash
+cd site
+npm run lint
+```
