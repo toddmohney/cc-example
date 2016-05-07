@@ -36,13 +36,13 @@ function buildTableData(listData, onListItemClick, selectedListItem) {
       key={consumer.id}
       consumer={consumer}
       onConsumerClick={() => onListItemClick(consumer.id)}
-      selected={selectedListItem.id == consumer.id}
+      selected={selectedListItem && selectedListItem.id == consumer.id}
     />)
 }
 
 ConsumerList.propTypes = {
   listData: PropTypes.array.isRequired,
-  selectedListItem: PropTypes.object.isRequired,
+  selectedListItem: PropTypes.object,
   onListItemClick: PropTypes.func.isRequired
 }
 

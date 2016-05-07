@@ -13,14 +13,16 @@ const ListDetailView = ({ listData, onListItemClick, selectedListItem }) => (
     </div>
 
     <div className="col-md-6">
-      <ConsumerDetail />
+      <ConsumerDetail
+        selectedListItem={selectedListItem}
+      />
     </div>
   </div>
 )
 
 ListDetailView.propTypes = {
   listData: PropTypes.array.isRequired,
-  selectedListItem: PropTypes.object.isRequired,
+  selectedListItem: PropTypes.object,
   onListItemClick: PropTypes.func.isRequired
 }
 

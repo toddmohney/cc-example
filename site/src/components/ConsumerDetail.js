@@ -1,15 +1,29 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
+import Panel from './Panel'
 
-const ConsumerList = () => (
-  <div className="panel panel-default">
-    <div className="panel-heading">
-      <h3 className="panel-title">Number of consumptions per consumer</h3>
-    </div>
-    <div className="panel-body">
-      <div id="piechart"></div>
-    </div>
-  </div>
-)
+const ConsumerDetail = ({ selectedListItem }) => {
+  // var consumptionData = selectedListItem.reduce( (acc, eatenMeatbar) => {
+    // let key = eatenMeatbar.eater.id;
+    // acc[key] == acc[key] || [];
+    // acc[key].push(eatenMeatbar);
+    // return acc;
+  // }, {});
 
-export default ConsumerList
+  let eaterName = selectedListItem ? selectedListItem.eater.name : "";
+  let panelTitle = "Meat consumed by " + eaterName;
+  let panelContent = <div id="piechart"></div>
+
+  return (
+    <Panel
+      title={panelTitle}
+      content={panelContent}
+    />
+  );
+}
+
+ConsumerDetail.propTypes = {
+  selectedListItem: PropTypes.object
+}
+
+export default ConsumerDetail
 

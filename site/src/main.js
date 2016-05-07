@@ -8,8 +8,9 @@ import { meatbarApp } from './reducers'
 import configureStore from './configureStore'
 import App from './components/App'
 
+// TODO: fix this
 let initialState = {
-  selectedEater: {},
+  selectedEater: null,
   meatbarEaters: [],
   consumedMeatbars: [],
   hasLoaded: false
