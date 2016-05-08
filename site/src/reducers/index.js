@@ -1,6 +1,6 @@
 import { REQUEST_CONSUMERS, RECEIVE_CONSUMERS, SELECT_CONSUMER } from '../actions';
 
-const meatbarApp = (state, action) => {
+const meatbarApp = (state=initialState, action) => {
   switch (action.type) {
   case REQUEST_CONSUMERS:
     return state;
@@ -15,6 +15,13 @@ const meatbarApp = (state, action) => {
   default:
     return state;
   }
+};
+
+const initialState = {
+  selectedEater: null,
+  meatbarEaters: [],
+  consumedMeatbars: [],
+  hasLoaded: false
 };
 
 function transformPayload(state, action) {

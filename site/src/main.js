@@ -10,14 +10,7 @@ google.charts.load('current', { 'packages': ['corechart'] });
 google.charts.setOnLoadCallback(runApp);
 
 function runApp() {
-  const initialState = {
-    selectedEater: null,
-    meatbarEaters: [],
-    consumedMeatbars: [],
-    hasLoaded: false
-  };
-
-  const store = configureStore(initialState);
+  const store = configureStore();
 
   render(
     <Provider store={store}>

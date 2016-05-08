@@ -28152,14 +28152,7 @@ google.charts.load('current', { 'packages': ['corechart'] });
 google.charts.setOnLoadCallback(runApp);
 
 function runApp() {
-  var initialState = {
-    selectedEater: null,
-    meatbarEaters: [],
-    consumedMeatbars: [],
-    hasLoaded: false
-  };
-
-  var store = (0, _configureStore2.default)(initialState);
+  var store = (0, _configureStore2.default)();
 
   (0, _reactDom.render)(_react2.default.createElement(
     _reactRedux.Provider,
@@ -28177,7 +28170,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _actions = require('../actions');
 
-var meatbarApp = function meatbarApp(state, action) {
+var meatbarApp = function meatbarApp() {
+  var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+  var action = arguments[1];
+
   switch (action.type) {
     case _actions.REQUEST_CONSUMERS:
       return state;
@@ -28194,6 +28190,13 @@ var meatbarApp = function meatbarApp(state, action) {
     default:
       return state;
   }
+};
+
+var initialState = {
+  selectedEater: null,
+  meatbarEaters: [],
+  consumedMeatbars: [],
+  hasLoaded: false
 };
 
 function transformPayload(state, action) {
