@@ -1,0 +1,22 @@
+prepare:
+  fetch:
+    - url: https://raw.githubusercontent.com/codeclimate/styleguide/master/ruby/rubocop.yml
+      path: base_rubocop.yml
+
+engines:
+  hlint:
+    enabled: true
+  jslint:
+    enabled: true
+    exclude_paths:
+      - "site/public/*"
+
+ratings:
+  paths:
+  - Gemfile.lock
+  - vcs_components/**/*
+  - kafka-processor/**/*
+  - shared/**/*
+
+exclude_paths:
+- "test"
